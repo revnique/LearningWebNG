@@ -15,7 +15,7 @@ export class AppComponent implements OnInit {
 
 
   ngOnInit(){
-    this.draw();
+    //this.draw();
   }
 
   draw() {
@@ -29,27 +29,69 @@ export class AppComponent implements OnInit {
     }
   }
   
-  drawRect(x:number, y:number, width:number, height:number) {
+  drawRect(x:number, y:number, endX:number, endY:number) {
     var canvas = document.getElementById('canvas') as HTMLCanvasElement;
+    var canvasBox = canvas.getBoundingClientRect();
+    // x = x - canvasBox.left;
+    // y = y - canvasBox.top;
+    // endX = endX - canvasBox.left;
+    // endY = endY - canvasBox.top;
+    var width = Math.abs(x - endX);
+    var height = Math.abs(y - endY);
+    height = height < 3 ? 2 : height;
+    width = width < 3 ? 2 : width;
+    var wentBackwards:boolean = false;
+    var wentUpwards:boolean = false;
+
+    if (x > endX){
+      wentBackwards = true;
+    }
+    if (y > endY){
+      wentUpwards = true;
+    }
     if (canvas.getContext) {
       var ctx = canvas.getContext('2d');
   
-      ctx.strokeRect(x, y, width, height);
+      ctx.strokeStyle="#000099";
+      //ctx.strokeRect(x, y, width, height);
+      //debugger;
+      if(wentBackwards && wentUpwards){
+        ctx.strokeRect(endX, endY, width, height);
+      } else if(wentUpwards){
+        ctx.strokeRect(x, endY, width, height);
+      } else if(wentBackwards){
+        ctx.strokeRect(endX, y, width, height);
+      }else{
+        ctx.strokeRect(x, y, width, height);
+      }
     }
   }
   mouseDown($event:any){
     console.log("mouse down",$event);
     this.isDragging = true;
-    this.dragStartX = $event.clientX;
-    this.dragStartY = $event.clientY;
+    var canvas = document.getElementById('canvas') as HTMLCanvasElement;
+    var o = this.getMousePos(canvas, $event);
+    this.dragStartX = o.x;
+    this.dragStartY = o.y;
   }
   mouseUp($event){
     console.log("mouse up",$event);
     this.isDragging = false;
-    this.dragEndX = $event.clientX;
-    this.dragEndY = $event.clientY;
-    this.drawRect(this.dragStartX,this.dragStartY,50,50);
+    var canvas = document.getElementById('canvas') as HTMLCanvasElement;
+    var o = this.getMousePos(canvas, $event);
+    this.dragEndX = o.x;
+    this.dragEndY = o.y;
+    this.drawRect(this.dragStartX,this.dragStartY,this.dragEndX,this.dragEndY);
   }
+
+  getMousePos(canvas, evt) {
+    var rect = canvas.getBoundingClientRect();
+    return {
+        x: (evt.clientX - rect.left) / (rect.right - rect.left) * canvas.width,
+        y: (evt.clientY - rect.top) / (rect.bottom - rect.top) * canvas.height
+    };
+}
+
   drag($event){
     console.log("drag",$event);
   }
