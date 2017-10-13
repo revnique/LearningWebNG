@@ -28,6 +28,15 @@ export class AppComponent implements OnInit {
       ctx.strokeRect(50, 50, 50, 50);
     }
   }
+  
+  drawRect(x:number, y:number, width:number, height:number) {
+    var canvas = document.getElementById('canvas') as HTMLCanvasElement;
+    if (canvas.getContext) {
+      var ctx = canvas.getContext('2d');
+  
+      ctx.strokeRect(x, y, width, height);
+    }
+  }
   mouseDown($event:any){
     console.log("mouse down",$event);
     this.isDragging = true;
@@ -37,8 +46,9 @@ export class AppComponent implements OnInit {
   mouseUp($event){
     console.log("mouse up",$event);
     this.isDragging = false;
-    this.dragStartX = $event.clientX;
-    this.dragStartY = $event.clientY;
+    this.dragEndX = $event.clientX;
+    this.dragEndY = $event.clientY;
+    this.drawRect(this.dragStartX,this.dragStartY,50,50);
   }
   drag($event){
     console.log("drag",$event);
