@@ -12,16 +12,24 @@ export class AppComponent implements OnInit {
   dragEndY:number;
   mainCanvas:any;
 
-  isDragging:boolean = false;
+  isDrawing:boolean = false;
 
 
   ngOnInit(){
-    //this.draw();
-    this.mainCanvas = document.getElementById('canvas') as HTMLCanvasElement;
-    var canvas = this.mainCanvas;
+    //self.draw();
+    let self = this;
+    self.mainCanvas = document.getElementById('canvas') as HTMLCanvasElement;
+    var canvas = self.mainCanvas;
     var e:any;
-    canvas.onmousedown = this.mouseDown(e);
-    canvas.onmouseup = this.mouseUp(e);
+    canvas.onmousedown = function(e){
+      self.mouseDown(e);
+    }
+    canvas.onmouseup = function(e){
+      self.mouseUp(e);
+    } 
+    canvas.onmousemove = function(e){
+      self.mouseMove(e);
+    }
   }
 
   draw() {
@@ -112,21 +120,37 @@ export class AppComponent implements OnInit {
   }
   mouseDown($event:any){
     console.log("mouse down",$event);
-    this.isDragging = true;
-    var canvas = document.getElementById('canvas') as HTMLCanvasElement;
+    this.isDrawing = true;
+    var canvas = this.mainCanvas;
     var o = this.getMousePos(canvas, $event);
     this.dragStartX = o.x;
     this.dragStartY = o.y;
   }
   mouseUp($event){
     console.log("mouse up",$event);
-    this.isDragging = false;
-    var canvas = document.getElementById('canvas') as HTMLCanvasElement;
+    this.isDrawing = false;
+    var canvas = this.mainCanvas;
     var o = this.getMousePos(canvas, $event);
     this.dragEndX = o.x;
     this.dragEndY = o.y;
-    this.drawRect(this.dragStartX,this.dragStartY,this.dragEndX,this.dragEndY);
   }
+
+  mouseMove(e:any) {
+    if (!this.isDrawing) {
+       return;
+    }
+    
+    var canvas = this.mainCanvas;
+    var o = this.getMousePos(canvas, e);
+    this.dragEndX = o.x;
+    this.dragEndY = o.y;
+    //debugger;
+    this.drawRect(this.dragStartX,this.dragStartY,this.dragEndX,this.dragEndY);
+};
+
+
+
+
 
   getMousePos(canvas, evt) {
     var rect = canvas.getBoundingClientRect();
