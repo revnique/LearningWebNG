@@ -10,6 +10,8 @@ export class AppComponent implements OnInit {
   dragStartY:number;
   dragEndX:number;
   dragEndY:number;
+  dragEndXold:number;
+  dragEndYold:number;
   mainCanvas:any;
 
   isDrawing:boolean = false;
@@ -144,10 +146,21 @@ export class AppComponent implements OnInit {
     var o = this.getMousePos(canvas, e);
     this.dragEndX = o.x;
     this.dragEndY = o.y;
+    this.clearIt(e);
+
+    if(this.dragEndX != this.dragEndXold || this.dragEndY != this.dragEndYold){
+      this.dragEndXold = this.dragEndX;
+      this.dragEndYold = this.dragEndY;
+    }
+
     //debugger;
     this.drawRect(this.dragStartX,this.dragStartY,this.dragEndX,this.dragEndY);
 };
 
+clearIt(e:any){
+  var context = this.mainCanvas.getContext('2d');
+  context.canvas.width = context.canvas.width;
+}
 
 
 
